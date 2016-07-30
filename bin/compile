@@ -11,6 +11,19 @@ ENV_DIR=$3
 # <BUILD_DIR> is (during this stage) a temporary directory. 
 # During execution of your slug it'll be known as '/app'.
 
+# this is the main heroku tool that installs the JVM
+curl --silent --location http://heroku-jvm-common.s3.amazonaws.com/jvm-buildpack-common.tar.gz | tar xz
+. bin/util
+. bin/java
+
+export_env_dir $ENV_DIR
+
+# install JDK
+javaVersion=$(detect_java_version ${BUILD_DIR})
+echo -n "-----> Installing OpenJDK ${javaVersion}..."
+install_java ${BUILD_DIR} ${javaVersion}
+jdk_overlay ${BUILD_DIR}
+echo " done"
 
 . $(dirname $0)/common
 

@@ -7,23 +7,20 @@ set -e
 # parse args
 BUILD_DIR=$1
 CACHE_DIR=$2
-ENV_DIR=$3
 # <BUILD_DIR> is (during this stage) a temporary directory. 
 # During execution of your slug it'll be known as '/app'.
 
-# this is the main heroku tool that installs the JVM
-curl --silent --location http://heroku-jvm-common.s3.amazonaws.com/jvm-buildpack-common.tar.gz | tar xz
-. bin/util
-. bin/java
 
-export_env_dir $ENV_DIR
+# download the buildpack
+JVM_COMMON_BUILDPACK=${JVM_COMMON_BUILDPACK:-https://codon-buildpacks.s3.amazonaws.com/buildpacks/heroku/jvm-common.tgz}
+mkdir -p /tmp/jvm-common
+curl --silent --location $JVM_COMMON_BUILDPACK | tar xzm -C /tmp/jvm-common --strip-components=1
+. /tmp/jvm-common/bin/util
+. /tmp/jvm-common/bin/java
 
 # install JDK
 javaVersion=$(detect_java_version ${BUILD_DIR})
-echo -n "-----> Installing OpenJDK ${javaVersion}..."
 install_java ${BUILD_DIR} ${javaVersion}
-jdk_overlay ${BUILD_DIR}
-echo " done"
 
 . $(dirname $0)/common
 

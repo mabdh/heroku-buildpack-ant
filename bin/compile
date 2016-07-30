@@ -32,19 +32,6 @@ mkdir -p $VENDORING_DIR
 # change to vendoring dir to install apache ant
 cd $VENDORING_DIR
 
-# this is the main heroku tool that installs the JVM
-curl --silent --location http://heroku-jvm-common.s3.amazonaws.com/jvm-buildpack-common.tar.gz | tar xz
-. bin/util
-. bin/java
-
-export_env_dir $ENV_DIR
-
-# install JDK
-javaVersion=$(detect_java_version ${BUILD_DIR})
-echo -n "-----> Installing OpenJDK ${javaVersion}..."
-install_java ${BUILD_DIR} ${javaVersion}
-jdk_overlay ${BUILD_DIR}
-echo " done"
 
 if [ -x $ANT_HOME/bin/ant ] ; then
     #assuming Apache Ant is already installed...
